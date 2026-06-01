@@ -2,6 +2,7 @@ import { KMSClient } from '@aws-sdk/client-kms';
 import { ISigner } from './signer.interface';
 import { KmsSignerService } from './kms-signer.service';
 import { LocalSignerService } from './local-signer.service';
+import { getSecretKey } from '../services/secretManager';
 
 export interface SignerConfig {
   backend: 'kms' | 'local';

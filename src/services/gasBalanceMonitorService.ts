@@ -32,10 +32,13 @@ export class GasBalanceMonitorService {
     private consecutiveFailures: number = 0;
 
     constructor(checkIntervalMs: number = DEFAULT_CHECK_INTERVAL_MS) {
-        const secret =
-            process.env.ORACLE_SECRET_KEY || process.env.SOROBAN_ADMIN_SECRET;
-        if (!secret) {
-            throw new Error("Stellar secret key not found in environment variables");
+        let secret: string;
+        try {
+            secret = getSecretKey();
+        } catch (err) {
+            // For KMS mode or if secret otherwise unavailable, this service cannot start
+            // unless we refactor it to use ISigner. For now, we support local secret only.
+            throw new Error(`GasBalanceMonitorService requires a local secret: ${err instanceof Error ? err.message : String(err)}`);
         }
 
         this.adminKeypair = Keypair.fromSecret(secret);
